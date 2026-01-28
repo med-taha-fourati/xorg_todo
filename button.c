@@ -1,4 +1,5 @@
 #include "button.h"
+#include <X11/X.h>
 #include <X11/Xlib.h>
 
 buttonProperties* box = NULL;
@@ -44,9 +45,29 @@ void drawButtonBox(Display* mainDisplay, Window mainWindow, GC context, buttonPr
             {x + w - r, y + h},
             {x + r, y + h}
         };
+        XPoint points2[] = {
+            {x + r, y + r},
+            {x + w - r, y + r},
+            {x + w - r, y},
+            {x + r, y}
+        };
+        XPoint points3[] = {
+            {x , y + r},
+            {x , y + h - r},
+            {x + r, y + h - r},
+            {x + r, y + r}
+        };
+        XPoint points4[] = {
+            {x + w - r, y + r},
+            {x + w - r, y + h - r},
+            {x + w, y + h - r},
+            {x + w, y + r}
+        };
         XFillPolygon(mainDisplay, mainWindow, context, points, 4, Convex, CoordModeOrigin);
-
-        } else {
+        XFillPolygon(mainDisplay, mainWindow, context, points2, 4, Convex, CoordModeOrigin);
+        XFillPolygon(mainDisplay, mainWindow, context, points3, 4, Convex, CoordModeOrigin);
+        XFillPolygon(mainDisplay, mainWindow, context, points4, 4, Convex, CoordModeOrigin);
+    } else {
 
         // Top-Left Corner (start angle 90 degrees, sweep 90 degrees)
         // Bounding box for the arc is (x, y) to (x + 2*r, y + 2*r)
@@ -63,6 +84,18 @@ void drawButtonBox(Display* mainDisplay, Window mainWindow, GC context, buttonPr
         // Bottom-Left Corner (start angle 180 degrees, sweep 90 degrees)
         // Bounding box is (x, y + h - 2*r) to (x + 2*r, y + h)
         XDrawArc(mainDisplay, mainWindow, context, x, y + h - 2 * r, 2 * r, 2 * r, 180 * 64, 90 * 64);
+        XDrawLine(mainDisplay, mainWindow, context, x + r, y, x + w - r, y);
+
+        // Bottom line
+        XDrawLine(mainDisplay, mainWindow, context, x + r, y + h, x + w - r, y + h);
+
+        // Left line
+        XDrawLine(mainDisplay, mainWindow, context, x, y + r, x, y + h - r);
+
+        // Right line
+        XDrawLine(mainDisplay, mainWindow, context, x + w, y + r, x + w, y + h - r);
+
+
     }
     // 2. Draw the four connecting straight lines
 
