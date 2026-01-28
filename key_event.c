@@ -32,11 +32,11 @@ int keyHandler(Display* mainDisplay, Window mainWindow, XEvent GeneralEvent, uns
                     printf("Left Click\n");
                     t_prev=t_new;
                     printf("Click Occured      : [%d, %d]\n",
-                           GeneralEvent.xbutton.x_root,
-                           GeneralEvent.xbutton.y_root);
+                           GeneralEvent.xbutton.x,
+                           GeneralEvent.xbutton.y);
                     // inject button handler here
-                    actUponClicking(GeneralEvent.xbutton.x_root,
-                        GeneralEvent.xbutton.y_root);
+                    actUponClicking(GeneralEvent.xbutton.x,
+                        GeneralEvent.xbutton.y);
                     break;
                 case 2:
                     printf("Grabed\n");

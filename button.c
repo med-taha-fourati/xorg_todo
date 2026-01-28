@@ -150,7 +150,7 @@ void actUponClicking(int x, int y) {
         printf("Box is null\n");
         return;
     };
-    if (x >= box->x || x < (box->x + box->width) && y >= box->y || y < (box->y + box->height)) box->filled = FILLED;
+    if (x >= box->x && x < (box->x + box->width) && y >= box->y && y < (box->y + box->height)) box->filled = FILLED;
     else box->filled = UNFILLED;
 }
 
@@ -159,7 +159,7 @@ void actUponReleasing(int x, int y) {
         printf("Box is null\n");
         return;
     };
-    if (x >= box->x || x < (box->x + box->width) && y >= box->y || y < (box->y + box->height)) box->filled = UNFILLED;
+    if (x >= box->x && x < (box->x + box->width) && y >= box->y && y < (box->y + box->height)) box->filled = UNFILLED;
     else box->filled = UNFILLED;
 }
 
