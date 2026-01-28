@@ -59,8 +59,8 @@ int keyHandler(Display* mainDisplay, Window mainWindow, XEvent GeneralEvent, uns
             switch (GeneralEvent.xbutton.button) {
                 case 1:
                     printf("Left Click Released\n");
-                    actUponReleasing(GeneralEvent.xbutton.x_root,
-                        GeneralEvent.xbutton.y_root);
+                    actUponReleasing(GeneralEvent.xbutton.x,
+                        GeneralEvent.xbutton.y);
                     break;
                 case 2:
                     printf("Middle Click Released\n");
