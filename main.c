@@ -46,24 +46,23 @@ int main(int argc, const char** argv) {
 
     XFlush(mainDisplay);
 
-    buttonProperties* newBox = initButtonBox(mainDisplay, mainWindow, context);
-    newBox->filled = UNFILLED;
+    box = initButtonBox(mainDisplay, mainWindow, context);
     unsigned int t_prev, t_new, t_diff = 0;
 
     int isTerminated = 1;
     while (isTerminated) {
         XEvent GeneralEvent = {};
         XNextEvent(mainDisplay, &GeneralEvent);
-        newBox->clickEvent(mainDisplay, mainWindow, context, *newBox);
+        box->clickEvent(mainDisplay, mainWindow, context, *box);
 
         isTerminated = keyHandler(mainDisplay, mainWindow, GeneralEvent, t_new, t_prev, t_diff);
 
         XClearWindow(mainDisplay, mainWindow);
-        newBox->drawButton(mainDisplay, mainWindow, context, *newBox);
+        box->drawButton(mainDisplay, mainWindow, context, *box);
     }
 
-    newBox->destroyEvent(mainDisplay);
-    destroyButtonBox(newBox);
+    box->destroyEvent(mainDisplay);
+    destroyButtonBox(box);
 
     return OK;
 }

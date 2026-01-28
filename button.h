@@ -29,8 +29,12 @@ typedef struct buttonPropreties {
     void (*destroyEvent)(Display* mainDisplay);
 } buttonProperties;
 
+extern buttonProperties* box;
+
 /* should clean up tbh */
 extern buttonProperties* initButtonBox(Display* mainDisplay, Window mainWindow, GC context);
 extern void destroyButtonBox(buttonProperties* box);
+extern void actUponClicking(int x, int y);
+extern void actUponReleasing(int x, int y);
 
 #endif

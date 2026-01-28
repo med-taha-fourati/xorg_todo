@@ -12,3 +12,6 @@ all: $(%.c)
 
 run: all
 	./$(TARGET_DIR)/$(TARGET)
+
+manual:
+	links https://tronche.com/gui/x/xlib/

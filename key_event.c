@@ -1,5 +1,6 @@
 #include "definitions.h"
 #include "button.h"
+#include <X11/X.h>
 #include <stdio.h>
 
 int exitStatus = 1;
@@ -34,6 +35,8 @@ int keyHandler(Display* mainDisplay, Window mainWindow, XEvent GeneralEvent, uns
                            GeneralEvent.xbutton.x_root,
                            GeneralEvent.xbutton.y_root);
                     // inject button handler here
+                    actUponClicking(GeneralEvent.xbutton.x_root,
+                        GeneralEvent.xbutton.y_root);
                     break;
                 case 2:
                     printf("Grabed\n");
@@ -48,6 +51,28 @@ int keyHandler(Display* mainDisplay, Window mainWindow, XEvent GeneralEvent, uns
                     break;
                 case 5:
                     printf("Scroll Down\n");
+                    break;
+            }
+            break;
+        }
+        case ButtonRelease: {
+            switch (GeneralEvent.xbutton.button) {
+                case 1:
+                    printf("Left Click Released\n");
+                    actUponReleasing(GeneralEvent.xbutton.x_root,
+                        GeneralEvent.xbutton.y_root);
+                    break;
+                case 2:
+                    printf("Middle Click Released\n");
+                    break;
+                case 3:
+                    printf("Right Click Released\n");
+                    break;
+                case 4:
+                    printf("Scroll UP Released\n");
+                    break;
+                case 5:
+                    printf("Scroll Down Released\n");
                     break;
             }
             break;
