@@ -20,7 +20,7 @@ typedef struct propreties {
     long color;
 } windowProperties;
 
-extern int keyHandler(Display* mainDisplay, Window mainWindow);
+extern int keyHandler(Display* mainDisplay, Window mainWindow, XEvent GeneralEvent, unsigned int t_new, unsigned int t_prev, unsigned int t_diff);
 extern void initX11(Display** displayPtr, Window* windowPtr, GC* gcPtr);
 
 #endif // DEFINITIONS_H

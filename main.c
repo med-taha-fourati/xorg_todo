@@ -48,15 +48,21 @@ int main(int argc, const char** argv) {
 
     buttonProperties* newBox = initButtonBox(mainDisplay, mainWindow, context);
     newBox->filled = UNFILLED;
+    unsigned int t_prev, t_new, t_diff = 0;
 
     int isTerminated = 1;
     while (isTerminated) {
-        isTerminated = keyHandler(mainDisplay, mainWindow);
+        XEvent GeneralEvent = {};
+        XNextEvent(mainDisplay, &GeneralEvent);
+        newBox->clickEvent(mainDisplay, mainWindow, context, *newBox);
+
+        isTerminated = keyHandler(mainDisplay, mainWindow, GeneralEvent, t_new, t_prev, t_diff);
 
         XClearWindow(mainDisplay, mainWindow);
         newBox->drawButton(mainDisplay, mainWindow, context, *newBox);
     }
 
+    newBox->destroyEvent(mainDisplay);
     destroyButtonBox(newBox);
 
     return OK;

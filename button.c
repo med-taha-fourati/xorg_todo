@@ -51,6 +51,27 @@ void drawButtonBox(Display* mainDisplay, Window mainWindow, GC context, buttonPr
     );
 }
 
+void clientEvent(Display* mainDisplay, Window mainWindow, GC context, buttonProperties box) {
+    XGrabPointer(
+        mainDisplay,
+        mainWindow,
+        True,
+        PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
+        GrabModeAsync,
+        GrabModeAsync,
+        None,
+        None,
+        CurrentTime
+    );
+
+
+    XAllowEvents(mainDisplay, AsyncPointer, CurrentTime);
+}
+
+void destroyEvent(Display* mainDisplay) {
+    XUngrabPointer(mainDisplay, CurrentTime);
+}
+
 buttonProperties* initButtonBox(Display* mainDisplay, Window mainWindow, GC context) {
     buttonProperties* box = (buttonProperties*)malloc(sizeof(buttonProperties));
 
@@ -62,10 +83,11 @@ buttonProperties* initButtonBox(Display* mainDisplay, Window mainWindow, GC cont
     box->radius = 10;
 
     box->drawButton = drawButtonBox;
-    box->text = "ABCDEFGHIJKLM";
+    box->text = "Press me!!";
 
-    box->clickEvent = NULL; //(void*)(0);
+    box->clickEvent = clientEvent; //(void*)(0);
 
+    box->destroyEvent = destroyEvent;
     return box;
 }
 

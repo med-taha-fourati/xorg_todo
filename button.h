@@ -7,11 +7,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <X11/keysym.h>
 
 enum fillOptions {
     FILLED = 0,
     UNFILLED = 1
 };
+
 
 typedef struct buttonPropreties {
     uint32_t x;
@@ -23,7 +25,8 @@ typedef struct buttonPropreties {
     enum fillOptions filled;
     const char* text;
     void (*drawButton)(Display* mainDisplay, Window mainWindow, GC context, struct buttonPropreties box);
-    void (*clickEvent)();
+    void (*clickEvent)(Display* mainDisplay, Window mainWindow, GC context, struct buttonPropreties box);
+    void (*destroyEvent)(Display* mainDisplay);
 } buttonProperties;
 
 /* should clean up tbh */
