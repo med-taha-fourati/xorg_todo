@@ -3,8 +3,35 @@
 #include <X11/X.h>
 #include <stdio.h>
 
+KCSPair kcs_cache[256] = {0};
+static KCSPair getKCSPair(XKeyEvent *event, XIC xic) {
+    if (event->type != KeyPress) {
+        return kcs_cache[event->keycode & 255];
+    }
+    KCSPair pair = {0, NoSymbol};
+    wchar_t buf[3];
+    buf[XwcLookupString(xic, event, buf, (sizeof(buf) / sizeof(wchar_t)) - 1, &pair.key_sym, NULL)] = 0;
+    // Are we looking at a lead surrogate?
+    if ((buf[0] & 0xFC00) == 0xD800) {
+        // We can reasonably assume the next byte is a trail surrogate.
+        pair.key_char = (buf[0] << 10) + buf[1] - 56613888;
+    } else {
+        pair.key_char = buf[0];
+    }
+    kcs_cache[event->keycode & 255] = pair;
+    return pair;
+}
+
 int exitStatus = 1;
-int keyHandler(Display* mainDisplay, Window mainWindow, XEvent GeneralEvent, unsigned int t_new, unsigned int t_prev, unsigned int t_diff) {
+int keyHandler(Display* mainDisplay,
+    Window mainWindow,
+    XEvent GeneralEvent,
+    unsigned int t_new,
+    unsigned int t_prev,
+    unsigned int t_diff,
+    XIC xic
+) {
+
     Atom WM_DELETE_WINDOW = XInternAtom(mainDisplay, "WM_DELETE_WINDOW", False);
     if (!XSetWMProtocols(mainDisplay, mainWindow, &WM_DELETE_WINDOW, 1)) {
         printf("Couldn't register WM_DELETE_WINDOW property\n");
@@ -16,6 +43,10 @@ int keyHandler(Display* mainDisplay, Window mainWindow, XEvent GeneralEvent, uns
         {
             XKeyPressedEvent *event = (XKeyPressedEvent*)&GeneralEvent;
             printf("Key Pressed: %d\n", event->keycode);
+            KCSPair kcspair = getKCSPair(event, xic);
+            XFilterEvent(&GeneralEvent, mainWindow);
+            printf("Translated Key: %c\n", kcspair.key_char);
+            actUponTyping(box, (char*)kcspair.key_char);
             //actUponTyping(box, (char*)event->keycode);
             if (event->keycode == XKeysymToKeycode(mainDisplay, XK_Escape)) exitStatus = 0;
         } break;
