@@ -29,7 +29,7 @@ typedef struct buttonPropreties {
     void (*destroyEvent)(Display* mainDisplay);
 } buttonProperties;
 
-extern buttonProperties* box;
+extern buttonProperties* box; // try to remove this as it is gonna be public and thats discouraged
 
 /* should clean up tbh */
 extern buttonProperties* initButtonBox(Display* mainDisplay, Window mainWindow, GC context);

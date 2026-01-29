@@ -1,7 +1,7 @@
 #include "definitions.h"
 #include "window_attrib.h"
-#include "button.h"
 #include <X11/Xlib.h>
+#include "textbox.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -44,25 +44,42 @@ int main(int argc, const char** argv) {
 
     XMapWindow(mainDisplay, mainWindow);
 
+    XIM xim = XOpenIM(mainDisplay, NULL, NULL, NULL);
+        if (!xim) {
+            return 3;
+        }
+        XIC xic = XCreateIC(
+            xim,
+            XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
+            XNClientWindow, mainWindow,
+            XNFocusWindow, mainWindow,
+            NULL
+        );
+        if (!xic) {
+            return 4;
+        }
+
     XFlush(mainDisplay);
 
-    box = initButtonBox(mainDisplay, mainWindow, context);
     unsigned int t_prev, t_new, t_diff = 0;
+    box = initTextBox(mainDisplay, mainWindow, context, createBoxPropertiesTest(), "llll");
 
     int isTerminated = 1;
     while (isTerminated) {
         XEvent GeneralEvent = {};
         XNextEvent(mainDisplay, &GeneralEvent);
-        box->clickEvent(mainDisplay, mainWindow, context, *box);
 
         isTerminated = keyHandler(mainDisplay, mainWindow, GeneralEvent, t_new, t_prev, t_diff);
 
         XClearWindow(mainDisplay, mainWindow);
-        box->drawButton(mainDisplay, mainWindow, context, *box);
+
+        box->properties->drawBox(mainDisplay, mainWindow, context, *box->properties);
+        box->drawText(mainDisplay, mainWindow, context, *box);
+        box->clickEvent(mainDisplay, mainWindow, context);
     }
 
     box->destroyEvent(mainDisplay);
-    destroyButtonBox(box);
+    freeTextBox(box);
 
     return OK;
 }

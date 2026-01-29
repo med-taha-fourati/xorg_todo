@@ -1,5 +1,5 @@
 #include "definitions.h"
-#include "button.h"
+#include "textbox.h"
 #include <X11/X.h>
 #include <stdio.h>
 
@@ -15,7 +15,8 @@ int keyHandler(Display* mainDisplay, Window mainWindow, XEvent GeneralEvent, uns
         case KeyRelease:
         {
             XKeyPressedEvent *event = (XKeyPressedEvent*)&GeneralEvent;
-
+            printf("Key Pressed: %d\n", event->keycode);
+            //actUponTyping(box, (char*)event->keycode);
             if (event->keycode == XKeysymToKeycode(mainDisplay, XK_Escape)) exitStatus = 0;
         } break;
         case ClientMessage:
@@ -35,7 +36,7 @@ int keyHandler(Display* mainDisplay, Window mainWindow, XEvent GeneralEvent, uns
                            GeneralEvent.xbutton.x,
                            GeneralEvent.xbutton.y);
                     // inject button handler here
-                    actUponClicking(GeneralEvent.xbutton.x,
+                    actUponClicking(box, GeneralEvent.xbutton.x,
                         GeneralEvent.xbutton.y);
                     break;
                 case 2:
@@ -59,7 +60,7 @@ int keyHandler(Display* mainDisplay, Window mainWindow, XEvent GeneralEvent, uns
             switch (GeneralEvent.xbutton.button) {
                 case 1:
                     printf("Left Click Released\n");
-                    actUponReleasing(GeneralEvent.xbutton.x,
+                    actUponReleasing(box,GeneralEvent.xbutton.x,
                         GeneralEvent.xbutton.y);
                     break;
                 case 2:

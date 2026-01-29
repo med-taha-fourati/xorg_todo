@@ -6,3 +6,8 @@
   Current serial number in output stream:  13189
 make: *** [Makefile:14: run] Error 1`
 - [ ] idk will come soon
+
+- [ ] instead of storing one button/or widget, store a list of buttons/widgets
+- - [ ] clean up the code more so that it's more modular (like the button and textbox widget having both redefinition issues)
+
+- [ ] make something like a widget struct that others can use
