@@ -2,11 +2,14 @@
 #include <X11/Xutil.h>
 #include <stdlib.h>
 #include "definitions.h"
+#include "widgets/label.h"
 #include "window_attrib.h"
-#include "widget_registrar.h"
-#include "widget_textbox.h"
-#include "widget_button.h"
-#include "textbox.h"
+#include "widget_registrar/widget_registrar.h"
+#include "widget_registrar/widget_textbox.h"
+#include "widget_registrar/widget_button.h"
+#include "widget_registrar/widget_label.h"
+#include "widgets/textbox.h"
+#include "interops/date_cmd.h"
 #include "app.h"
 
 static Display* g_display = 0;
@@ -14,6 +17,8 @@ static Window g_window = 0;
 static GC g_gc = 0;
 static XIC g_xic = 0;
 static XIM g_xim = 0;
+
+static char* currentDate = NULL;
 
 Display* app_display() { return g_display; }
 Window app_window() { return g_window; }
@@ -76,16 +81,27 @@ int app_init() {
     registrar_init();
 
     boxProperties* textBoxProperties = (boxProperties*)malloc(sizeof(boxProperties));
-    textBoxProperties->x = 100;
-    textBoxProperties->y = 100;
-    textBoxProperties->width = 200;
-    textBoxProperties->height = 30;
+    textBoxProperties->x = 20;
+    textBoxProperties->y = 80;
+    textBoxProperties->width = 560;
+    textBoxProperties->height = 300;
 
     Widget* w_tb = initTextBox(textBoxProperties, "");
     registrar_add(w_tb);
 
     Widget* w_btn = initButton(NULL);
     registrar_add(w_btn);
+
+
+    labelProperties* labelProp = label_create();
+    labelProp->posX = 200;
+    labelProp->posY = 40;
+
+    currentDate = date_cmd();
+    label_set_text(labelProp, currentDate);
+
+    Widget* w_lbl = initLabel(labelProp);
+    registrar_add(w_lbl);
 
     return 0;
 }
@@ -104,6 +120,9 @@ int app_run() {
 }
 
 void app_destroy() {
+    if (currentDate == NULL) {
+        free_date_cmd(currentDate);
+    }
     registrar_destroy_all(g_display);
     if (g_xic) XDestroyIC(g_xic);
     if (g_xim) XCloseIM(g_xim);

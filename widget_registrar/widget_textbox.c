@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "widget_textbox.h"
-#include "textbox.h"
+#include "../widgets/textbox.h"
 
 static void wt_draw(Display* display, Window window, GC gc, Widget* self) {
     textBox* tb = (textBox*)self->data;

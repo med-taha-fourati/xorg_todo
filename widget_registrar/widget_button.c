@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "widget_button.h"
-#include "button.h"
+#include "../widgets/button.h"
 
 static void wb_draw(Display* display, Window window, GC gc, Widget* self) {
     buttonProperties* b = (buttonProperties*)self->data;

@@ -2,6 +2,7 @@
 #define TEXTBOX_H
 
 #include "box.h"
+#include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
 enum textBoxState {
@@ -18,10 +19,17 @@ typedef struct textBox {
     enum textBoxState state;
     int numberOfLines;
     int calculatedWidthOfLine;
-    union cursorPos {
-        int x;
-        int y;
+    struct cursorPos {
+        int line;
+        int col;
     } cursorPos;
+    int firstVisibleLine;
+    int maxVisibleLines;
+    int lineHeight;
+    int ascent;
+    int descent;
+    int charWidth;
+    XFontStruct* font;
     char** lines;
     void (*drawText)(Display* mainDisplay, Window mainWindow, GC context, struct textBox textBox);
     void (*clickEvent)(Display* mainDisplay, Window mainWindow, GC context);

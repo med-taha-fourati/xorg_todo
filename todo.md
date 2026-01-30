@@ -7,7 +7,9 @@
 make: *** [Makefile:14: run] Error 1`
 - [ ] idk will come soon
 
-- [ ] instead of storing one button/or widget, store a list of buttons/widgets
-- - [ ] clean up the code more so that it's more modular (like the button and textbox widget having both redefinition issues)
+- [x] instead of storing one button/or widget, store a list of buttons/widgets
+- - [x] clean up the code more so that it's more modular (like the button and textbox widget having both redefinition issues)
 
-- [ ] make something like a widget struct that others can use
+- [x] make something like a widget struct that others can use
+- [ ] add newline support to the textbox
+- [ ] presumably add an import window/widget which requires me to implement a load/save dialog option

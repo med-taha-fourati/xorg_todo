@@ -1,5 +1,5 @@
 #include "definitions.h"
-#include "widget_registrar.h"
+#include "widget_registrar/widget_registrar.h"
 #include <X11/X.h>
 #include <X11/keysym.h>
 #include <stdio.h>
