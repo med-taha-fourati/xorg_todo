@@ -125,7 +125,8 @@ textBox* createTextBox(boxProperties* properties, const char* text) {
         exit(EXIT_FAILURE);
     }
     box->lines[currentIndex] = strdup(box->text);
-
+    box->cursorPos.x = 0;
+    box->cursorPos.y = 0;
     box->properties->drawBox = drawTextBox;
     box->drawText = drawTextWithPadding;
     return box;
