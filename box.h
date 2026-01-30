@@ -19,6 +19,7 @@ typedef struct boxPropreties {
     long color;
     enum fillOptions filled;
     void (*drawBox)(Display* mainDisplay, Window mainWindow, GC context, struct boxPropreties box);
+    int depth;
 } boxProperties;
 
 /* should clean up tbh */

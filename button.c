@@ -2,8 +2,6 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
-buttonProperties* box = NULL;
-
 void drawButtonBox(Display* mainDisplay, Window mainWindow, GC context, buttonProperties box) {
     int x = box.x;
     int y = box.y;
@@ -104,7 +102,7 @@ void drawButtonBox(Display* mainDisplay, Window mainWindow, GC context, buttonPr
     );
 }
 
-void clientEvent(Display* mainDisplay, Window mainWindow, GC context, buttonProperties box) {
+static void btn_clientEvent(Display* mainDisplay, Window mainWindow, GC context, buttonProperties box) {
     XGrabPointer(
         mainDisplay,
         mainWindow,
@@ -121,31 +119,31 @@ void clientEvent(Display* mainDisplay, Window mainWindow, GC context, buttonProp
     XAllowEvents(mainDisplay, AsyncPointer, CurrentTime);
 }
 
-void destroyEvent(Display* mainDisplay) {
+static void btn_destroyEvent(Display* mainDisplay) {
     XUngrabPointer(mainDisplay, CurrentTime);
 }
 
-buttonProperties* initButtonBox(Display* mainDisplay, Window mainWindow, GC context) {
-    box = (buttonProperties*)malloc(sizeof(buttonProperties));
+buttonProperties* createButton(Display* mainDisplay, Window mainWindow, GC context) {
+    buttonProperties* b = (buttonProperties*)malloc(sizeof(buttonProperties));
 
-    box->x = 30;
-    box->y = 20;
-    box->width = 100;
-    box->height = 40;
-    box->color = 0x00000000;
-    box->radius = 10;
-    box->filled = UNFILLED;
+    b->x = 30;
+    b->y = 20;
+    b->width = 100;
+    b->height = 40;
+    b->color = 0x00000000;
+    b->radius = 10;
+    b->filled = UNFILLED;
 
-    box->drawButton = drawButtonBox;
-    box->text = "Press me!!";
+    b->drawButton = drawButtonBox;
+    b->text = "Press me!!";
 
-    box->clickEvent = clientEvent; //(void*)(0);
+    b->clickEvent = btn_clientEvent;
 
-    box->destroyEvent = destroyEvent;
-    return box;
+    b->destroyEvent = btn_destroyEvent;
+    return b;
 }
 
-void actUponClicking(int x, int y) {
+void actUponButtonClick(buttonProperties* box, int x, int y) {
     if (box == NULL) {
         printf("Box is null\n");
         return;
@@ -154,7 +152,7 @@ void actUponClicking(int x, int y) {
     else box->filled = UNFILLED;
 }
 
-void actUponReleasing(int x, int y) {
+void actUponButtonRelease(buttonProperties* box, int x, int y) {
     if (box == NULL) {
         printf("Box is null\n");
         return;

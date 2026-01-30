@@ -1,7 +1,9 @@
 #include "definitions.h"
-#include "textbox.h"
+#include "widget_registrar.h"
 #include <X11/X.h>
+#include <X11/keysym.h>
 #include <stdio.h>
+#include <wchar.h>
 
 KCSPair kcs_cache[256] = {0};
 static KCSPair getKCSPair(XKeyEvent *event, XIC xic) {
@@ -25,6 +27,7 @@ static KCSPair getKCSPair(XKeyEvent *event, XIC xic) {
 int exitStatus = 1;
 int keyHandler(Display* mainDisplay,
     Window mainWindow,
+    GC context,
     XEvent GeneralEvent,
     unsigned int t_new,
     unsigned int t_prev,
@@ -38,16 +41,25 @@ int keyHandler(Display* mainDisplay,
     }
 
     switch (GeneralEvent.type) {
+
         case KeyPress:
-        case KeyRelease:
         {
             XKeyPressedEvent *event = (XKeyPressedEvent*)&GeneralEvent;
             printf("Key Pressed: %d\n", event->keycode);
             KCSPair kcspair = getKCSPair(event, xic);
             XFilterEvent(&GeneralEvent, mainWindow);
             printf("Translated Key: %c\n", kcspair.key_char);
-            actUponTyping(box, (char*)kcspair.key_char);
-            //actUponTyping(box, (char*)event->keycode);
+            registrar_key(kcspair.key_char, kcspair.key_sym);
+            if (event->keycode == XKeysymToKeycode(mainDisplay, XK_Escape)) exitStatus = 0;
+        } break;
+        case KeyRelease:
+        {
+            XKeyReleasedEvent *event = (XKeyReleasedEvent*)&GeneralEvent;
+            printf("Key Released: %d\n", event->keycode);
+            KCSPair kcspair = getKCSPair(event, xic);
+            XFilterEvent(&GeneralEvent, mainWindow);
+            printf("Translated Key: %c\n", kcspair.key_char);
+            //registrar_key(kcspair.key_char, kcspair.key_sym);
             if (event->keycode == XKeysymToKeycode(mainDisplay, XK_Escape)) exitStatus = 0;
         } break;
         case ClientMessage:
@@ -66,8 +78,7 @@ int keyHandler(Display* mainDisplay,
                     printf("Click Occured      : [%d, %d]\n",
                            GeneralEvent.xbutton.x,
                            GeneralEvent.xbutton.y);
-                    // inject button handler here
-                    actUponClicking(box, GeneralEvent.xbutton.x,
+                    registrar_click(mainDisplay, mainWindow, context, GeneralEvent.xbutton.x,
                         GeneralEvent.xbutton.y);
                     break;
                 case 2:
@@ -91,7 +102,7 @@ int keyHandler(Display* mainDisplay,
             switch (GeneralEvent.xbutton.button) {
                 case 1:
                     printf("Left Click Released\n");
-                    actUponReleasing(box,GeneralEvent.xbutton.x,
+                    registrar_release(mainDisplay, mainWindow, context, GeneralEvent.xbutton.x,
                         GeneralEvent.xbutton.y);
                     break;
                 case 2:

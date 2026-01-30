@@ -29,12 +29,9 @@ typedef struct buttonPropreties {
     void (*destroyEvent)(Display* mainDisplay);
 } buttonProperties;
 
-extern buttonProperties* box; // try to remove this as it is gonna be public and thats discouraged
-
-/* should clean up tbh */
-extern buttonProperties* initButtonBox(Display* mainDisplay, Window mainWindow, GC context);
+extern buttonProperties* createButton(Display* mainDisplay, Window mainWindow, GC context);
 extern void destroyButtonBox(buttonProperties* box);
-extern void actUponClicking(int x, int y);
-extern void actUponReleasing(int x, int y);
+extern void actUponButtonClick(buttonProperties* box, int x, int y);
+extern void actUponButtonRelease(buttonProperties* box, int x, int y);
 
 #endif

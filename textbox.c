@@ -4,21 +4,16 @@
 #include "textbox.h"
 #include "box.h"
 
-textBox* box = NULL;
-
 void drawTextBox(Display* mainDisplay, Window mainWindow, GC context, boxProperties properties) {
-    // regular box
     XDrawRectangle(mainDisplay, mainWindow, context, properties.x, properties.y, properties.width, properties.height);
 }
 
 void drawTextWithPadding(Display* mainDisplay, Window mainWindow, GC context, textBox box) {
-    // draw text with padding
     int startX = box.properties->x + box.paddingAllSides;
     int startY = box.properties->y + box.paddingAllSides;
     int endX = startX + box.properties->width - 2 * box.paddingAllSides;
     int endY = startY + box.properties->height - 2 * box.paddingAllSides;
     XDrawString(mainDisplay, mainWindow, context, startX, startY, box.text, strlen(box.text));
-    //XmbDrawText(mainDisplay, mainWindow, context, startX, startY, NULL, 0);
 }
 
 boxProperties* createBoxPropertiesTest() {
@@ -45,7 +40,7 @@ void actUponClicking(textBox* box,int x, int y) {
         else box->state = NORMAL;
 }
 
-void clientEvent(Display* mainDisplay, Window mainWindow, GC context) {
+static void tb_clientEvent(Display* mainDisplay, Window mainWindow, GC context) {
     XGrabPointer(
         mainDisplay,
         mainWindow,
@@ -62,18 +57,11 @@ void clientEvent(Display* mainDisplay, Window mainWindow, GC context) {
     XAllowEvents(mainDisplay, AsyncPointer, CurrentTime);
 }
 
-void destroyEvent(Display* mainDisplay) {
+static void tb_destroyEvent(Display* mainDisplay) {
     XUngrabPointer(mainDisplay, CurrentTime);
 }
 
 void actUponReleasing(textBox* box,int x, int y) {
-    // if (box == NULL) {
-    //             printf("Box is null\n");
-    //             return;
-    //         };
-    //         if (x >= box->properties->x && x < (box->properties->x + box->properties->width) && y >= box->properties->y && y < (box->properties->y + box->properties->height)) box->state = SELECTED;
-    //         else box->state = NORMAL;
-    // not sure what to do....
 }
 
 void actUponTyping(textBox* box, char* input) {
@@ -88,7 +76,7 @@ void actUponTyping(textBox* box, char* input) {
     strcat(box->text, input);
 }
 
-textBox* initTextBox(Display* display, Window window, GC context, boxProperties* properties, const char* text) {
+textBox* createTextBox(boxProperties* properties, const char* text) {
     textBox* box = (textBox*)malloc(sizeof(textBox));
     if (!box) {
         fprintf(stderr, "Memory allocation failed\n");
@@ -105,8 +93,16 @@ textBox* initTextBox(Display* display, Window window, GC context, boxProperties*
     strcpy(box->text, text);
 
     box->paddingAllSides = 10;
-    box->clickEvent = clientEvent;
-    box->destroyEvent = destroyEvent;
+    box->clickEvent = tb_clientEvent;
+    box->destroyEvent = tb_destroyEvent;
+    box->numberOfLines = 1;
+    box->calculatedWidthOfLine = box->properties->width - 2 * box->paddingAllSides;
+    box->lines = (char**)malloc(sizeof(char*) * box->numberOfLines);
+    if (!box->lines) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    box->lines[0] = strdup(box->text);
 
     box->properties->drawBox = drawTextBox;
     box->drawText = drawTextWithPadding;
