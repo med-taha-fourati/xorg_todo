@@ -1,21 +1,54 @@
 CC = clang
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -I.
 LDFLAGS = -lX11
-TARGET = xorg_todo
-WIDGET_REGISTRAR_DIR = widget_registrar
-WIDGETS_DIR = widgets
-SRC_WR = $(WIDGET_REGISTRAR_DIR)/widget_registrar.c $(WIDGET_REGISTRAR_DIR)/widget_textbox.c $(WIDGET_REGISTRAR_DIR)/widget_button.c $(WIDGET_REGISTRAR_DIR)/widget_label.c
-SRC_WD = $(WIDGETS_DIR)/textbox.c $(WIDGETS_DIR)/button.c $(WIDGETS_DIR)/box.c $(WIDGETS_DIR)/rounded_box.c $(WIDGETS_DIR)/label.c
-SRC = main.c app.c key_event.c $(SRC_WR) $(SRC_WD) interops/date_cmd.c
-OBJ = main.o
-TARGET_LIB = lib
-TARGET_DIR = build
 
-all: $(%.c)
-	$(CC) $(CFLAGS) $(SRC) -o $(TARGET_DIR)/$(TARGET) $(LDFLAGS) $(PROC)
+BUILD_DIR = build
+LIB_DIR = $(BUILD_DIR)/lib
+TARGET = $(BUILD_DIR)/xorg_todo
+
+WR_DIR = widget_registrar
+WD_DIR = widgets
+IO_DIR = interops
+
+SRC_WR = $(WR_DIR)/widget_registrar.c $(WR_DIR)/widget_textbox.c $(WR_DIR)/widget_button.c $(WR_DIR)/widget_label.c
+OBJ_WR = $(SRC_WR:%.c=$(BUILD_DIR)/%.o)
+LIB_WR = $(LIB_DIR)/libwidget_registrar.a
+
+SRC_WD = $(WD_DIR)/textbox.c $(WD_DIR)/button.c $(WD_DIR)/box.c $(WD_DIR)/rounded_box.c $(WD_DIR)/label.c
+OBJ_WD = $(SRC_WD:%.c=$(BUILD_DIR)/%.o)
+LIB_WD = $(LIB_DIR)/libwidgets.a
+
+SRC_MAIN = main.c app.c key_event.c $(IO_DIR)/date_cmd.c
+OBJ_MAIN = $(SRC_MAIN:%.c=$(BUILD_DIR)/%.o)
+
+all: directories $(TARGET)
+
+$(TARGET): $(OBJ_MAIN) $(LIB_WR) $(LIB_WD)
+	$(CC) $(OBJ_MAIN) $(LIB_WR) $(LIB_WD) -o $@ $(LDFLAGS)
+
+$(LIB_WR): $(OBJ_WR)
+	ar rcs $@ $^
+
+$(LIB_WD): $(OBJ_WD)
+	ar rcs $@ $^
+
+$(BUILD_DIR)/%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+directories:
+	mkdir -p $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)/$(WR_DIR)
+	mkdir -p $(BUILD_DIR)/$(WD_DIR)
+	mkdir -p $(BUILD_DIR)/$(IO_DIR)
+	mkdir -p $(LIB_DIR)
 
 run: all
-	./$(TARGET_DIR)/$(TARGET)
+	./$(TARGET)
+
+clean:
+	rm -rf $(BUILD_DIR)
 
 manual:
 	links https://tronche.com/gui/x/xlib/
+
+.PHONY: all run clean manual directories
