@@ -18,4 +18,11 @@ typedef struct list {
     struct list *prevItem;
 } list;
 
+list* createList(const char* startingText, enum doneStatus done);
+void destroyList(list** existingList);
+void addNextItemAtEnd(list** existingList, const char* text, enum doneStatus done);
+void addPrevItemAtBeginning(list** existingList, const char* text, enum doneStatus done);
+void removeItem(list** existingList, list* listElementToRemove);
+list* elementLookupByText(list* originalList, const char* text);
+
 #endif
