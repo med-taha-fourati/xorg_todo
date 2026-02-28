@@ -30,7 +30,7 @@ OBJ_MAIN = $(SRC_MAIN:%.c=$(BUILD_DIR)/%.o)
 all: directories $(TARGET)
 
 $(TARGET): $(OBJ_MAIN) $(LIB_WR) $(LIB_WD) $(LIB_TYS)
-	$(CC) $(OBJ_MAIN) $(LIB_WR) $(LIB_WD) -o $@ $(LDFLAGS)
+	$(CC) $(OBJ_MAIN) $(LIB_WR) $(LIB_WD) $(LIB_TYS) -o $@ $(LDFLAGS)
 
 $(LIB_WR): $(OBJ_WR)
 	ar rcs $@ $^
@@ -38,7 +38,7 @@ $(LIB_WR): $(OBJ_WR)
 $(LIB_WD): $(OBJ_WD)
 	ar rcs $@ $^
 
-$(LIB_LST): $(OBJ_LST)
+$(LIB_TYS): $(OBJ_TYS)
 	ar rcs $@ $^
 
 $(BUILD_DIR)/%.o: %.c
@@ -49,7 +49,7 @@ directories:
 	mkdir -p $(BUILD_DIR)/$(WR_DIR)
 	mkdir -p $(BUILD_DIR)/$(WD_DIR)
 	mkdir -p $(BUILD_DIR)/$(IO_DIR)
-	mkdir -p $(BUILD_DIR)/$(LST_DIR)
+	mkdir -p $(BUILD_DIR)/$(TS_DIR)
 	mkdir -p $(LIB_DIR)
 
 run: all

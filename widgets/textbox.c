@@ -148,6 +148,7 @@ void actUponTyping(textBox* box, char* input) {
         int linelen = strlen(line);
         if (box->cursorPos.col < 0) box->cursorPos.col = 0;
         if (box->cursorPos.col > linelen) box->cursorPos.col = linelen;
+        printf("Character outputted: %c || it's code is: %d", c, c);
         if (c == '\n') {
             // handle newline
             tb_insert_new_line(box, box->cursorPos.line + 1);
