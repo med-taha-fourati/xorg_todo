@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <wchar.h>
 
+/**
+ * Thanks stackoverflow xd
+ */
 KCSPair kcs_cache[256] = {0};
 static KCSPair getKCSPair(XKeyEvent *event, XIC xic) {
     if (event->type != KeyPress) {
