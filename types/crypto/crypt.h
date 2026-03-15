@@ -19,6 +19,23 @@ typedef struct Crypt {
 Crypt* crypt_init(const unsigned char* iv, size_t iv_len);
 int crypt_destroy(Crypt* crypt);
 
+// AES-256-CBC convenience wrappers for null-terminated strings.
+//
+// Notes:
+// - `key` must point to 32 bytes.
+// - Uses `crypt->iv` as the CBC IV (must be 16 bytes).
+// - Output is HEX text so it is safe as a `char*`.
+// - The function allocates `*out_*` with `malloc`; caller must `free`.
+int crypt_encrypt_string_aes256_cbc_hex(Crypt* crypt,
+                                       const char* plaintext,
+                                       const unsigned char* key,
+                                       char** out_hex_ciphertext);
+
+int crypt_decrypt_string_aes256_cbc_hex(Crypt* crypt,
+                                       const char* hex_ciphertext,
+                                       const unsigned char* key,
+                                       char** out_plaintext);
+
 
 
 #endif
