@@ -10,22 +10,21 @@ WR_DIR = widget_registrar
 WD_DIR = widgets
 IO_DIR = interops
 TS_DIR = types
-LST_DIR = $(TS_DIR)/list
 
-SRC_WR = $(WR_DIR)/widget_registrar.c $(WR_DIR)/widget_textbox.c $(WR_DIR)/widget_button.c $(WR_DIR)/widget_label.c
-OBJ_WR = $(SRC_WR:%.c=$(BUILD_DIR)/%.o)
+SRC_WR := $(shell find $(WR_DIR) -name '*.c')
+OBJ_WR := $(patsubst %.c,$(BUILD_DIR)/%.o,$(SRC_WR))
 LIB_WR = $(LIB_DIR)/libwidget_registrar.a
 
-SRC_WD = $(WD_DIR)/textbox.c $(WD_DIR)/button.c $(WD_DIR)/box.c $(WD_DIR)/rounded_box.c $(WD_DIR)/label.c
-OBJ_WD = $(SRC_WD:%.c=$(BUILD_DIR)/%.o)
+SRC_WD := $(shell find $(WD_DIR) -name '*.c')
+OBJ_WD := $(patsubst %.c,$(BUILD_DIR)/%.o,$(SRC_WD))
 LIB_WD = $(LIB_DIR)/libwidgets.a
 
-SRC_TYS = $(LST_DIR)/list.c
-OBJ_TYS = $(SRC_TYS:%.c=$(BUILD_DIR)/%.o)
+SRC_TYS := $(shell find $(TS_DIR) -name '*.c')
+OBJ_TYS := $(patsubst %.c,$(BUILD_DIR)/%.o,$(SRC_TYS))
 LIB_TYS = $(LIB_DIR)/libtypes.a
 
 SRC_MAIN = main.c app.c key_event.c $(IO_DIR)/date_cmd.c
-OBJ_MAIN = $(SRC_MAIN:%.c=$(BUILD_DIR)/%.o)
+OBJ_MAIN := $(patsubst %.c,$(BUILD_DIR)/%.o,$(SRC_MAIN))
 
 all: directories $(TARGET)
 
@@ -42,14 +41,11 @@ $(LIB_TYS): $(OBJ_TYS)
 	ar rcs $@ $^
 
 $(BUILD_DIR)/%.o: %.c
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 directories:
 	mkdir -p $(BUILD_DIR)
-	mkdir -p $(BUILD_DIR)/$(WR_DIR)
-	mkdir -p $(BUILD_DIR)/$(WD_DIR)
-	mkdir -p $(BUILD_DIR)/$(IO_DIR)
-	mkdir -p $(BUILD_DIR)/$(TS_DIR)
 	mkdir -p $(LIB_DIR)
 
 run: all
