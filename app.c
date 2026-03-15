@@ -11,6 +11,7 @@
 #include "widgets/textbox.h"
 #include "interops/date_cmd.h"
 #include "app.h"
+#include "types/crypto/crypt.h"
 
 static Display* g_display = 0;
 static Window g_window = 0;
@@ -102,6 +103,27 @@ int app_init() {
 
     Widget* w_lbl = initLabel(labelProp);
     registrar_add(w_lbl);
+
+    unsigned const char* key = (unsigned const char*)"0niflrNheNigger";
+
+    Crypt* crypt = crypt_init(key, sizeof(key));
+
+    if (!crypt) {
+        return -1;
+    }
+
+    unsigned char* out = (unsigned char*)malloc(sizeof(unsigned char) * 1024);
+    crypt->encrypt((unsigned char*)"xbox 360", strlen("xbox 360"),
+                   key, &out);
+
+    printf("Original: %s\n", (unsigned char*)"xbox 360");
+    printf("Encrypted: %s\n", out);
+
+    crypt->decrypt(out, sizeof(out), key, &out);
+    printf("Decrypted: %s\n", out);
+
+    crypt_destroy(crypt);
+
 
     return 0;
 }

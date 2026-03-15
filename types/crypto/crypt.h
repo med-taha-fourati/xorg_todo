@@ -10,14 +10,15 @@ typedef struct Crypt {
     size_t iv_len;               // AES usually needs 16 bytes
 
     int (*encrypt)(const unsigned char* plaintext, size_t len,
-                   const unsigned char* key, unsigned char* out);
+                   const unsigned char* key, unsigned char** out);
 
     int (*decrypt)(const unsigned char* ciphertext, size_t len,
-                   const unsigned char* key, unsigned char* out);
+                   const unsigned char* key, unsigned char** out);
 } Crypt;
 
 Crypt* crypt_init(const unsigned char* iv, size_t iv_len);
 int crypt_destroy(Crypt* crypt);
+
 
 // AES-256-CBC convenience wrappers for null-terminated strings.
 //
