@@ -408,7 +408,15 @@ static int aes256_cbc_decrypt_raw(const unsigned char* ciphertext, size_t len,
     for (size_t off = 0; off < len; off += AES_BLOCK_SIZE) {
         unsigned char block[AES_BLOCK_SIZE];
         aes256_decrypt_block(ciphertext + off, block, expanded);
-        for (int i = 0; i < AES_BLOCK_SIZE; i++) *out_plaintext[off + i] = (unsigned char)(block[i] ^ prev[i]);
+        /* Fixed: correctly write into the caller-provided output buffer.
+         * Previous code used *out_plaintext[off + i] which is incorrect due to operator precedence.
+         * We must index into the buffer pointed to by *out_plaintext.
+         *
+         * Oh fuck you gpt :sob:
+         */
+        for (int i = 0; i < AES_BLOCK_SIZE; i++) {
+            (*out_plaintext)[off + i] = (unsigned char)(block[i] ^ prev[i]);
+        }
         memcpy(prev, ciphertext + off, AES_BLOCK_SIZE);
     }
     return 0;

@@ -104,26 +104,55 @@ int app_init() {
     Widget* w_lbl = initLabel(labelProp);
     registrar_add(w_lbl);
 
-    unsigned const char* key = (unsigned const char*)"0niflrNheNigger";
+    // unsigned const char* key = (unsigned const char*)"0niflrNheAwsome";
 
-    Crypt* crypt = crypt_init(key, sizeof(key));
+    // Crypt* crypt = crypt_init(key, sizeof(key));
 
-    if (!crypt) {
-        return -1;
-    }
+    // if (!crypt) {
+    //     return -1;
+    // }
 
-    unsigned char* out = (unsigned char*)malloc(sizeof(unsigned char) * 1024);
-    crypt->encrypt((unsigned char*)"xbox 360", strlen("xbox 360"),
-                   key, &out);
+    // unsigned char* out = (unsigned char*)malloc(sizeof(unsigned char) * 1024);
+    // crypt->encrypt((unsigned char*)"xbox 360", strlen("xbox 360"),
+    //                key, &out);
 
-    printf("Original: %s\n", (unsigned char*)"xbox 360");
-    printf("Encrypted: %s\n", out);
+    // printf("Original: %s\n", (unsigned char*)"xbox 360");
+    // printf("Encrypted: %s\n", out);
 
-    crypt->decrypt(out, sizeof(out), key, &out);
-    printf("Decrypted: %s\n", out);
+    // crypt->decrypt(out, sizeof(out), key, &out);
+    // printf("Decrypted: %s\n", out);
 
+    // crypt_destroy(crypt);
+
+    unsigned char key[32] = "0123456789abcdef0123456789abcdef";
+
+    Crypt* crypt = crypt_init((unsigned char*)"1234567890123456", 16);
+
+    char* encrypted = NULL;
+    char* decrypted = NULL;
+
+    // Encrypt
+    crypt_encrypt_string_aes256_cbc_hex(
+        crypt,
+        "xbox 360",
+        key,
+        &encrypted
+    );
+
+    printf("Encrypted: %s\n", encrypted);
+
+    // Decrypt
+    crypt_decrypt_string_aes256_cbc_hex(
+        crypt,
+        encrypted,
+        key,
+        &decrypted
+    );
+
+    printf("Decrypted: %s\n", decrypted);
+
+    // cleanup
     crypt_destroy(crypt);
-
 
     return 0;
 }
@@ -142,8 +171,9 @@ int app_run() {
 }
 
 void app_destroy() {
-    if (currentDate == NULL) {
+    if (currentDate != NULL) {
         free_date_cmd(currentDate);
+        currentDate = NULL;
     }
     registrar_destroy_all(g_display);
     if (g_xic) XDestroyIC(g_xic);
