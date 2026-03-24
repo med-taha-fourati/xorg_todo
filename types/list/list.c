@@ -6,56 +6,57 @@ list* createList(const char* startingText, enum doneStatus done) {
     newList->doneOrNotBoolean = done;
     newList->nextItem = NULL;
     newList->prevItem = NULL;
-    newList->text = startingText == NULL ? "" : startingText;
+    newList->text = strdup(startingText ? startingText : "");
 
     return newList;
 }
 
 void destroyList(list** existingList) {
     // to not leave memory dangling, we will nullify each item one by one
-    list* itemToDelete = *existingList;
-    list* copy = NULL;
-    while (itemToDelete->nextItem != NULL) {
-        copy = itemToDelete->nextItem;
-        copy = NULL;
-        free(copy);
-        itemToDelete = copy;
+    list* current = *existingList;
+    while (current != NULL) {
+        list* next = current->nextItem;
+        free(current);
+        current = next;
     }
-    free(itemToDelete);
+    *existingList = NULL;
+    //free(current->text); dangling pointer
 }
 
 void addNextItemAtEnd(list** existingList, const char* text, enum doneStatus done) {
-    list* copy = *existingList;
     list* newElement = createList(text, done);
-    copy->nextItem = newElement;
-    newElement->prevItem = copy;
+    if (*existingList == NULL) {
+        *existingList = newElement;
+        return;
+    }
+    list* current = *existingList;
+    while (current->nextItem != NULL) {
+        current = current->nextItem;
+    }
+    current->nextItem = newElement;
+    newElement->prevItem = current;
 }
 
 void addPrevItemAtBeginning(list** existingList, const char* text, enum doneStatus done) {
-    list* copy = *existingList;
     list* newElement = createList(text, done);
-    copy->prevItem = newElement;
-    newElement->nextItem = copy;
+    if (*existingList != NULL) {
+        newElement->nextItem = *existingList;
+        (*existingList)->prevItem = newElement;
+    }
+    *existingList = newElement;
 }
 
-void removeItem(list** existingList, list* listElementToRemove) {
-    list* copy = *existingList;
-    list* copy2 = *existingList;
-    list* found = NULL;
-    while (copy->nextItem != NULL && copy != listElementToRemove) {
-        found = copy->nextItem;
-    }
-    if (found->nextItem == NULL) {
-        copy2->nextItem = NULL;
-    } else if (found->prevItem == NULL) {
-        copy2->prevItem = NULL;
+void removeItem(list** head, list* node) {
+    if (!head || !*head || !node) return;
+    if (node->prevItem) {
+        node->prevItem->nextItem = node->nextItem;
     } else {
-        copy2->nextItem = found->nextItem;
-        found->nextItem->prevItem = copy2;
-        copy2->prevItem = found->prevItem;
-        found->prevItem->prevItem = copy2;
+        *head = node->nextItem; // removing head
     }
-    free(found);
+    if (node->nextItem) {
+        node->nextItem->prevItem = node->prevItem;
+    }
+    free(node);
 }
 
 /*
@@ -64,8 +65,8 @@ void removeItem(list** existingList, list* listElementToRemove) {
  */
 list* elementLookupByText(list* originalList, const char* text) {
     list* looking = originalList;
-    while (looking->nextItem != NULL && looking->text == text) {
-        looking = originalList->nextItem;
+    while (looking->nextItem != NULL && !strcmp(looking->text, text)) {
+        looking = looking->nextItem;
     }
     return looking;
 }
